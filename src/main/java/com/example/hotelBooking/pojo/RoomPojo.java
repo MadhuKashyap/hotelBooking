@@ -1,0 +1,25 @@
+package com.example.hotelBooking.pojo;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+import com.example.hotelBooking.model.enums.RoomType;
+
+import java.util.Date;
+import java.util.List;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "room")
+public class RoomPojo {
+    @Id
+    private Long id;
+    private RoomType roomType;
+    private int roomNumber;
+    private double price;
+    private List<Date> bookedDates;
+    private List<String> amenities;    // Add fields and methods as needed
+} 
