@@ -48,7 +48,7 @@ public class HotelDto {
         List<RoomData> roomDataList = new ArrayList<>();
         List<RoomPojo> roomPojoList =  roomDao.findByHotelId(hotelId)
                 .stream().filter( x -> x.getBookedDates().size() != 365)
-                .collect(Collectors.toList()));
+                .toList();
         for(RoomPojo roomPojo : roomPojoList) {
             roomDataList.add(dtoHelper.convertRoomPojoToData(roomPojo));
         }
