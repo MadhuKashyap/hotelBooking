@@ -31,9 +31,9 @@ public class HotelController {
     public String bookRoom(@RequestBody BookingForm bookingForm) throws Exception {
         return hotelDto.bookRoom(bookingForm);
     }
-    @PostMapping("/cancel-room")
-    public String cancelRoom(@RequestParam Long roomId, @RequestBody UserForm userForm) throws Exception {
-        return hotelDto.cancelRoom(roomId, userForm);
+    @GetMapping("/cancel-room")
+    public String cancelRoom(@RequestParam Long bookingId) throws Exception {
+        return hotelDto.cancelRoom(bookingId);
     }
     @PostMapping("/view-bookings")
     public BookingHistoryData viewBookingHistory(@RequestBody UserForm userForm) {

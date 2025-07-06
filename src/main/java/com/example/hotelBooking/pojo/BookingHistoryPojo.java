@@ -19,7 +19,6 @@ public class BookingHistoryPojo {
     private Long id;
     private Long userId;
     private Long roomId;
-    private Date date;
     private Double priceTotal;
     private BookingStatus status;
     private Date startDate;

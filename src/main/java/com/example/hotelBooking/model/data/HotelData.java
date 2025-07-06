@@ -10,6 +10,5 @@ public class HotelData {
     private String name;
     private String description;
     private Double rating;
-    private String amenities; // Comma-separated or use a List if needed
     private Long addressId; // Reference to AddressPojo
 }

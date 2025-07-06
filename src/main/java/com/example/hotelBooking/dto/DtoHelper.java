@@ -9,6 +9,7 @@ import com.example.hotelBooking.model.data.HotelData;
 import com.example.hotelBooking.model.data.RoomData;
 import com.example.hotelBooking.model.enums.BookingStatus;
 import com.example.hotelBooking.model.enums.UserType;
+import com.example.hotelBooking.model.form.BookingForm;
 import com.example.hotelBooking.pojo.BookingHistoryPojo;
 import com.example.hotelBooking.pojo.HotelPojo;
 import com.example.hotelBooking.form.HotelFilterForm;
@@ -45,13 +46,7 @@ public class DtoHelper {
         // Optionally check addressId or address if required
         return true;
     }
-    public static List<HotelPojo> filteHotelByDateRange(List<HotelPojo> hotels, HotelFilterForm filterForm) {
-        // Placeholder: implement actual date range filtering logic if HotelPojo has date fields
-        // For now, return the original list (since HotelPojo has no date fields)
-        return hotels;
-    }
-
-    public List<HotelPojo> filterHotelByPrice(List<HotelPojo> hotels, HotelFilterForm filterForm) {
+    public List<HotelPojo> filteHotelByDateRange(List<HotelPojo> hotels, HotelFilterForm filterForm) {
         Date startDate = filterForm.getStartDate();
         Date endDate = filterForm.getEndDate();
         if (startDate == null || endDate == null) {
@@ -86,6 +81,11 @@ public class DtoHelper {
         return filtered;
     }
 
+    public List<HotelPojo> filterHotelByPrice(List<HotelPojo> hotels, HotelFilterForm filterForm) {
+        //TODO : Implement this
+        return new ArrayList<>();
+    }
+
     public static List<HotelPojo> filterHotelByRating(List<HotelPojo> hotels, HotelFilterForm filterForm) {
         Integer ratings = filterForm.getRatings();
         if (ratings == null) return hotels;
@@ -110,7 +110,6 @@ public class DtoHelper {
         data.setName(pojo.getName());
         data.setDescription(pojo.getDescription());
         data.setRating(pojo.getRating() != null ? pojo.getRating() : null);
-        data.setAmenities(pojo.getAmenities());
         data.setAddressId(pojo.getAddressId());
         return data;
     }
@@ -125,11 +124,16 @@ public class DtoHelper {
         return data;
     }
 
-    public BookingHistoryPojo saveBookingHistory(RoomPojo roomPojo, BookingHistoryPojo historyPojo, Date date, UserPojo userPojo) {
+    public BookingHistoryPojo saveBookingHistory(RoomPojo roomPojo,
+                                                 BookingHistoryPojo historyPojo,
+                                                 BookingForm bookingForm,
+                                                 UserPojo userPojo) {
         historyPojo.setUserId(userPojo.getId());
         historyPojo.setRoomId(roomPojo.getId());
-        historyPojo.setDate(date);
+        historyPojo.setStartDate(historyPojo.getStartDate());
         historyPojo.setPriceTotal(roomPojo.getPrice());
+        historyPojo.setStartDate(bookingForm.getStartDate());
+        historyPojo.setEndDate(bookingForm.getEndDate());
         historyPojo.setStatus(BookingStatus.PAYMENT_PENDING);
         return historyPojo;
     }
@@ -138,7 +142,9 @@ public class DtoHelper {
         BookingHistory bookingHistory = new BookingHistory();
         
         // Set basic booking information
-        bookingHistory.setDate(bookingHistoryPojo.getDate());
+        bookingHistory.setBookingId(bookingHistoryPojo.getId());
+        bookingHistory.setStartDate(bookingHistoryPojo.getStartDate());
+        bookingHistory.setEndDate(bookingHistoryPojo.getEndDate());
         bookingHistory.setPriceTotal(bookingHistoryPojo.getPriceTotal());
         
         // Fetch and set user information

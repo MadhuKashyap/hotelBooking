@@ -10,6 +10,7 @@ import com.example.hotelBooking.model.data.BookingHistory;
 import com.example.hotelBooking.model.data.BookingHistoryData;
 import com.example.hotelBooking.model.data.HotelData;
 import com.example.hotelBooking.model.data.RoomData;
+import com.example.hotelBooking.model.enums.BookingStatus;
 import com.example.hotelBooking.model.form.BookingForm;
 import com.example.hotelBooking.pojo.BookingHistoryPojo;
 import com.example.hotelBooking.pojo.HotelPojo;
@@ -51,7 +52,7 @@ public class HotelDto {
         List<HotelData> hotelDataList = new ArrayList<>();
 
         if(!ObjectUtils.isEmpty(filterForm.getStartDate()) && !ObjectUtils.isEmpty(filterForm.getEndDate())) {
-            hotelByDateRange = DtoHelper.filteHotelByDateRange(hotels, filterForm);
+            hotelByDateRange = dtoHelper.filteHotelByDateRange(hotels, filterForm);
         } if(!CollectionUtils.isEmpty(hotelByDateRange)) {
             hotelByPrice = dtoHelper.filterHotelByPrice(hotelByDateRange, filterForm);
         } if(!CollectionUtils.isEmpty(hotelByPrice)) {
@@ -74,7 +75,7 @@ public class HotelDto {
         return roomDataList;
     }
 
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public String bookRoom(BookingForm bookingForm) throws Exception {
         UserPojo userPojo = new UserPojo(); //TODO : fetch user here from security context
         for(int retries = 0; retries < 3; retries++) {
@@ -86,7 +87,7 @@ public class HotelDto {
                 roomPojo.getBookedDates().add(date);
                 roomDao.save(roomPojo);
                 BookingHistoryPojo historyPojo = new BookingHistoryPojo();
-                historyPojo = dtoHelper.saveBookingHistory(roomPojo, historyPojo, date, userPojo);
+                historyPojo = dtoHelper.saveBookingHistory(roomPojo, historyPojo, bookingForm, userPojo);
                 historyDao.save(historyPojo);
                 return "Room is booked successfully";
             } catch (OptimisticLockException e) {
@@ -96,8 +97,15 @@ public class HotelDto {
         return "Room not found";
     }
 
-    public String cancelRoom(Long roomId, UserForm userForm) {
-        return "";
+    @Transactional(rollbackOn =
+    Exception.class)
+    public String cancelRoom(Long bookingId) throws Exception {
+        Optional<BookingHistoryPojo> pojo = historyDao.findById(bookingId);
+        if(pojo.isPresent()) {
+            pojo.get().setStatus(BookingStatus.CANCELLED);
+            return "Booking : " + bookingId + " cancelled successfully";
+        } else
+            throw new Exception("No such booking found");
     }
 
     public BookingHistoryData viewBookingHistory(UserForm userForm) {
