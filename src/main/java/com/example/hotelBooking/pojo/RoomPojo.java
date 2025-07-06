@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "room")
-public class RoomPojo {
+public class RoomPojo extends AbstractVersionedPojo{
     @Id
     private Long id;
     private RoomType roomType;
@@ -22,4 +22,5 @@ public class RoomPojo {
     private double price;
     private List<Date> bookedDates;
     private List<String> amenities;    // Add fields and methods as needed
+    private Long hotelId;
 } 

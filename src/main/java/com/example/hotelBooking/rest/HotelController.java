@@ -2,8 +2,11 @@ package com.example.hotelBooking.rest;
 
 import com.example.hotelBooking.form.HotelFilterForm;
 import com.example.hotelBooking.dto.HotelDto;
+import com.example.hotelBooking.form.UserForm;
+import com.example.hotelBooking.model.data.BookingHistoryData;
 import com.example.hotelBooking.model.data.HotelData;
 import com.example.hotelBooking.model.data.RoomData;
+import com.example.hotelBooking.model.form.BookingForm;
 import com.example.hotelBooking.pojo.HotelPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +23,22 @@ public class HotelController {
     public List<HotelData> fetchHotels(@RequestBody HotelFilterForm filterForm) {
         return hotelDto.fetchHotels(filterForm);
     }
-    @PostMapping("/fetch-rooms")
+    @GetMapping("/fetch-rooms")
     public List<RoomData> fetchAvailableHotelRooms(@RequestParam Long hotelId) {
         return hotelDto.fetchRoomsByHotelId(hotelId);
     }
+    @PostMapping("/book-room")
+    public String bookRoom(@RequestBody BookingForm bookingForm) throws Exception {
+        return hotelDto.bookRoom(bookingForm);
+    }
+    @PostMapping("/cancel-room")
+    public String cancelRoom(@RequestParam Long roomId, @RequestBody UserForm userForm) throws Exception {
+        return hotelDto.cancelRoom(roomId, userForm);
+    }
+    @PostMapping("/view-bookings")
+    public BookingHistoryData viewBookingHistory(@RequestBody UserForm userForm) {
+        return hotelDto.viewBookingHistory(userForm);
+    }
+
 
 }

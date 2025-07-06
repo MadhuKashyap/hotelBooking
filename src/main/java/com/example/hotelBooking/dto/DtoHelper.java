@@ -1,9 +1,15 @@
 package com.example.hotelBooking.dto;
 
+import com.example.hotelBooking.dao.HotelDao;
 import com.example.hotelBooking.dao.RoomDao;
+import com.example.hotelBooking.dao.UserDao;
 import com.example.hotelBooking.form.UserForm;
+import com.example.hotelBooking.model.data.BookingHistory;
 import com.example.hotelBooking.model.data.HotelData;
 import com.example.hotelBooking.model.data.RoomData;
+import com.example.hotelBooking.model.enums.BookingStatus;
+import com.example.hotelBooking.model.enums.UserType;
+import com.example.hotelBooking.pojo.BookingHistoryPojo;
 import com.example.hotelBooking.pojo.HotelPojo;
 import com.example.hotelBooking.form.HotelFilterForm;
 import com.example.hotelBooking.pojo.RoomPojo;
@@ -14,12 +20,20 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class DtoHelper {
     @Autowired
     private RoomDao roomDao;
+    
+    @Autowired
+    private UserDao userDao;
+    
+    @Autowired
+    private HotelDao hotelDao;
+
     public boolean validateUserForm(UserForm userForm) {
         if (userForm == null) return false;
         if (userForm.getName() == null || userForm.getName().trim().isEmpty()) return false;
@@ -86,7 +100,7 @@ public class DtoHelper {
         pojo.setPassword(userForm.getPassword());
         pojo.setPhone(userForm.getPhone());
         pojo.setAddress(userForm.getAddress());
-        pojo.setRole(userForm.getRole());
+        pojo.setRole(UserType.valueOf(userForm.getRole()));
         pojo.setAddressId(userForm.getAddressId());
         return pojo;
     }
@@ -95,7 +109,7 @@ public class DtoHelper {
         data.setId(pojo.getId());
         data.setName(pojo.getName());
         data.setDescription(pojo.getDescription());
-        data.setRating(pojo.getRating());
+        data.setRating(pojo.getRating() != null ? pojo.getRating() : null);
         data.setAmenities(pojo.getAmenities());
         data.setAddressId(pojo.getAddressId());
         return data;
@@ -109,5 +123,48 @@ public class DtoHelper {
         data.setPrice(pojo.getPrice());
         // Add more mappings if HotelData has more fields
         return data;
+    }
+
+    public BookingHistoryPojo saveBookingHistory(RoomPojo roomPojo, BookingHistoryPojo historyPojo, Date date, UserPojo userPojo) {
+        historyPojo.setUserId(userPojo.getId());
+        historyPojo.setRoomId(roomPojo.getId());
+        historyPojo.setDate(date);
+        historyPojo.setPriceTotal(roomPojo.getPrice());
+        historyPojo.setStatus(BookingStatus.PAYMENT_PENDING);
+        return historyPojo;
+    }
+
+    public BookingHistory convertBookingHistoryPojoToData(BookingHistoryPojo bookingHistoryPojo) {
+        BookingHistory bookingHistory = new BookingHistory();
+        
+        // Set basic booking information
+        bookingHistory.setDate(bookingHistoryPojo.getDate());
+        bookingHistory.setPriceTotal(bookingHistoryPojo.getPriceTotal());
+        
+        // Fetch and set user information
+        Optional<UserPojo> userOptional = userDao.findById(bookingHistoryPojo.getUserId());
+        if (userOptional.isPresent()) {
+            UserPojo user = userOptional.get();
+            bookingHistory.setUsername(user.getId()); // Using ID as username since field is Long
+            bookingHistory.setUserEmail(user.getId()); // Using ID as email since field is Long
+        }
+        
+        // Fetch and set room and hotel information
+        Optional<RoomPojo> roomOptional = roomDao.findById(bookingHistoryPojo.getRoomId());
+        if (roomOptional.isPresent()) {
+            RoomPojo room = roomOptional.get();
+            bookingHistory.setRoomName("Room " + room.getRoomNumber());
+            bookingHistory.setRoomType(room.getRoomType().toString());
+            bookingHistory.setRoomDescription("Room type: " + room.getRoomType() + ", Price: " + room.getPrice());
+            
+            // Fetch hotel information
+            Optional<HotelPojo> hotelOptional = hotelDao.findById(room.getHotelId());
+            if (hotelOptional.isPresent()) {
+                HotelPojo hotel = hotelOptional.get();
+                bookingHistory.setHotelName(hotel.getName());
+            }
+        }
+        
+        return bookingHistory;
     }
 }
