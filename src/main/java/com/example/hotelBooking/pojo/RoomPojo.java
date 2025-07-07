@@ -1,8 +1,6 @@
 package com.example.hotelBooking.pojo;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import com.example.hotelBooking.model.enums.RoomType;
@@ -17,6 +15,7 @@ import java.util.List;
 public class RoomPojo extends AbstractVersionedPojo{
     @Id
     private Long id;
+    @Enumerated(EnumType.STRING)
     private RoomType roomType;
     private int roomNumber;
     private double price;

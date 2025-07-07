@@ -1,10 +1,7 @@
 package com.example.hotelBooking.pojo;
 
 import com.example.hotelBooking.model.enums.BookingStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +17,7 @@ public class BookingHistoryPojo {
     private Long userId;
     private Long roomId;
     private Double priceTotal;
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
     private Date startDate;
     private Date endDate;

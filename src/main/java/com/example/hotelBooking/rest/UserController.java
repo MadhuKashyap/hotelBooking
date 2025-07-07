@@ -42,4 +42,9 @@ public class UserController {
         response.put("success", result.contains("successfully"));
         return response;
     }
+
+    @PostMapping("/users/login")
+    public Map<String, Object> loginWithPath(@RequestBody UserForm userForm) {
+        return login(userForm);
+    }
 } 

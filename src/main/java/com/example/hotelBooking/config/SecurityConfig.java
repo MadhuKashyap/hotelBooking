@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -17,15 +19,18 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for REST API
             .authorizeHttpRequests(authz -> authz
                 // Public endpoints that don't require authentication
-                .requestMatchers("/users/login").permitAll()
-                .requestMatchers("/users/signup").permitAll()
-                .requestMatchers("/health").permitAll()
+                .requestMatchers("/users/signup", "/health").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )
-            .httpBasic(AbstractHttpConfigurer::disable) // Disable basic auth
-            .formLogin(AbstractHttpConfigurer::disable); // Disable form login
+            .httpBasic(httpBasic -> {}); // Enable HTTP Basic Auth
         
         return http.build();
+    }
+    //Must be included if password is not getting encoded otherwise even if we hve not encoded password,
+    // spring will by default use it's bCrypt to encode password and even correct credentials will get 401
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
     }
 }

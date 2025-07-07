@@ -1,8 +1,7 @@
 package com.example.hotelBooking.pojo;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
+import com.example.hotelBooking.model.enums.AddressType;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "address")
@@ -16,6 +15,8 @@ public class AddressPojo {
     private String zipCode;
     private double latitude;
     private double longitude;
+    @Enumerated(EnumType.STRING)
+    private AddressType addressType;
 
     // Add fields and methods as needed
 } 

@@ -1,10 +1,7 @@
 package com.example.hotelBooking.pojo;
 
 import com.example.hotelBooking.model.enums.UserType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +21,7 @@ public class UserPojo {
     private String password;
     private String phone;
     private String address;
+    @Enumerated(EnumType.STRING)
     private UserType role;
     private Long addressId ;
 } 
