@@ -112,7 +112,7 @@ public class HotelDto {
         BookingHistoryData bookingHistoryData = new BookingHistoryData();
         List<BookingHistory> bookingHistories = new ArrayList<>();
         List<BookingHistoryPojo> bookingHistoryPojoList = historyDao.findByUserId(
-                userDao.findByUserIdPassword(userForm.getUserId(), userForm.getPassword()));
+                userDao.findByUserIdAndPassword(userForm.getUserId(), userForm.getPassword()));
         for(BookingHistoryPojo bookingHistoryPojo : bookingHistoryPojoList) {
             bookingHistories.add(dtoHelper.convertBookingHistoryPojoToData(bookingHistoryPojo));
         }
