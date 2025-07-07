@@ -50,7 +50,12 @@ public class HotelDto {
         List<HotelPojo> hotelByPrice = new ArrayList<>();
         List<HotelPojo> hotelByRating = new ArrayList<>();
         List<HotelData> hotelDataList = new ArrayList<>();
-
+        if(ObjectUtils.isEmpty(filterForm.getStartDate()) && ObjectUtils.isEmpty(filterForm.getEndDate())
+        && ObjectUtils.isEmpty(filterForm.getRatings()) && ObjectUtils.isEmpty(filterForm.getPriceStart())
+        && ObjectUtils.isEmpty(filterForm.getPriceEnd()))
+            for(HotelPojo hotelPojo : hotels) {
+                hotelDataList.add(dtoHelper.convertHotelPojoToData(hotelPojo));
+            }
         if(!ObjectUtils.isEmpty(filterForm.getStartDate()) && !ObjectUtils.isEmpty(filterForm.getEndDate())) {
             hotelByDateRange = dtoHelper.filteHotelByDateRange(hotels, filterForm);
         } if(!CollectionUtils.isEmpty(hotelByDateRange)) {
