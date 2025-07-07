@@ -10,3 +10,13 @@ Let's see how authentication works here
   3. Gets the UserDetails object (with username, password, roles).
   4. Compares the password from the request with the password from the UserDetails.
   5. If they match, authentication succeeds.
+
+
+ObjectMapper mapper = new ObjectMapper();
+
+// Convert List<String> to JSON String
+String amenitiesJson = mapper.writeValueAsString(Arrays.asList("WiFi", "AC", "TV"));
+room.setAmenities(amenitiesJson);
+
+// Convert JSON String back to List<String>
+List<String> amenitiesList = mapper.readValue(room.getAmenities(), new TypeReference<List<String>>() {});
