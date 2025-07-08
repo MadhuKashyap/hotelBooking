@@ -51,24 +51,15 @@ public class HotelDto {
 
     public List<HotelData> fetchHotels(HotelFilterForm filterForm) throws JsonProcessingException {
         List<HotelPojo> hotels = hotelDao.findAll();
-        List<HotelPojo> hotelByDateRange = new ArrayList<>();
-        List<HotelPojo> hotelByPrice = new ArrayList<>();
-        List<HotelPojo> hotelByRating = new ArrayList<>();
         List<HotelData> hotelDataList = new ArrayList<>();
-        if(ObjectUtils.isEmpty(filterForm.getStartDate()) && ObjectUtils.isEmpty(filterForm.getEndDate())
-        && ObjectUtils.isEmpty(filterForm.getRatings()) && ObjectUtils.isEmpty(filterForm.getPriceStart())
-        && ObjectUtils.isEmpty(filterForm.getPriceEnd()))
-            for(HotelPojo hotelPojo : hotels) {
-                hotelDataList.add(dtoHelper.convertHotelPojoToData(hotelPojo));
-            }
         if(!ObjectUtils.isEmpty(filterForm.getStartDate()) && !ObjectUtils.isEmpty(filterForm.getEndDate())) {
-            hotelByDateRange = dtoHelper.filterHotelByDateRange(hotels, filterForm);
-        } if(!CollectionUtils.isEmpty(hotelByDateRange)) {
-            hotelByPrice = dtoHelper.filterHotelByPrice(hotelByDateRange, filterForm);
-        } if(!CollectionUtils.isEmpty(hotelByPrice)) {
-            hotelByRating = DtoHelper.filterHotelByRating(hotelByPrice, filterForm);
+            hotels = dtoHelper.filterHotelByDateRange(hotels, filterForm);
+        } if(!ObjectUtils.isEmpty(filterForm.getPriceStart()) && !ObjectUtils.isEmpty(filterForm.getPriceEnd())) {
+            hotels = dtoHelper.filterHotelByPrice(hotels, filterForm);
+        } if(!ObjectUtils.isEmpty(filterForm.getRatings())) {
+            hotels = DtoHelper.filterHotelByRating(hotels, filterForm);
         }
-        for(HotelPojo hotelPojo : hotelByRating) {
+        for(HotelPojo hotelPojo : hotels) {
             hotelDataList.add(dtoHelper.convertHotelPojoToData(hotelPojo));
         }
         return hotelDataList;
