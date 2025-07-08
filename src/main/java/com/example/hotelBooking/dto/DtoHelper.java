@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -155,13 +156,13 @@ public class DtoHelper {
     public BookingHistoryPojo saveBookingHistory(RoomPojo roomPojo,
                                                  BookingHistoryPojo historyPojo,
                                                  BookingForm bookingForm,
-                                                 UserPojo userPojo) {
+                                                 UserPojo userPojo) throws ParseException {
         historyPojo.setUserId(userPojo.getId());
         historyPojo.setRoomId(roomPojo.getId());
         historyPojo.setStartDate(historyPojo.getStartDate());
         historyPojo.setPriceTotal(roomPojo.getPrice());
-        historyPojo.setStartDate(bookingForm.getStartDate());
-        historyPojo.setEndDate(bookingForm.getEndDate());
+        historyPojo.setStartDate(formatter.parse(bookingForm.getStartDate()));
+        historyPojo.setEndDate(formatter.parse(bookingForm.getEndDate()));
         historyPojo.setStatus(BookingStatus.PAYMENT_PENDING);
         return historyPojo;
     }

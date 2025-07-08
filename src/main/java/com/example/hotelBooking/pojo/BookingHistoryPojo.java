@@ -13,6 +13,7 @@ import java.util.Date;
 @Table(name = "booking_history", uniqueConstraints = @UniqueConstraint(columnNames = {"userId, roomId"}))
 public class BookingHistoryPojo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
     private Long roomId;

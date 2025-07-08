@@ -22,13 +22,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class HotelDto {
@@ -47,7 +49,9 @@ public class HotelDto {
     @Autowired
     private UserDao userDao;
 
+    public static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     ObjectMapper mapper = new ObjectMapper();
+    Calendar cal = Calendar.getInstance();
 
     public List<HotelData> fetchHotels(HotelFilterForm filterForm) throws JsonProcessingException {
         List<HotelPojo> hotels = hotelDao.findAll();
@@ -76,16 +80,41 @@ public class HotelDto {
 
     @Transactional(rollbackOn = Exception.class)
     public String bookRoom(BookingForm bookingForm) throws Exception {
-        UserPojo userPojo = new UserPojo(); //TODO : fetch user here from security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = null;
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails userDetails) {
+                userId = userDetails.getUsername();
+            } else if (principal instanceof String) {
+                userId = (String) principal;
+            }
+        }
+        if (userId == null) {
+            throw new Exception("User not authenticated");
+        }
+        UserPojo userPojo = userDao.findByUserId(userId); //TODO : fetch user here from security context
         for(int retries = 0; retries < 3; retries++) {
             try {
                 RoomPojo roomPojo = roomDao.findById(bookingForm.getRoomId()).orElseThrow();
-                Date date = new Date();
                 String bookedDatesString = roomPojo.getBookedDates();
                 List<String> bookedDates = mapper.readValue(bookedDatesString, new TypeReference<List<String>>() {});
-                if(bookedDates.contains(date))
-                    throw new Exception("Room already booked");
-                bookedDates.add(String.valueOf(date));
+                for(String date : bookedDates) {
+                    if(formatter.parse(date).after(formatter.parse(bookingForm.getStartDate())) &&
+                            formatter.parse(date).before(formatter.parse(bookingForm.getEndDate())))
+                        throw new Exception("Room already booked");
+                }
+                String startDate = bookingForm.getStartDate();
+                String endDate = bookingForm.getEndDate();
+                cal.setTime(formatter.parse(endDate));
+                cal.add(Calendar.DATE, 1);
+                endDate = formatter.format(cal.getTime());
+                while(!startDate.equals(endDate)) {
+                    bookedDates.add(startDate);
+                    cal.setTime(formatter.parse(startDate));
+                    cal.add(Calendar.DATE, 1);
+                    startDate = formatter.format(cal.getTime());
+                }
                 roomPojo.setBookedDates(mapper.writeValueAsString(bookedDates));
                 roomDao.save(roomPojo);
                 BookingHistoryPojo historyPojo = new BookingHistoryPojo();

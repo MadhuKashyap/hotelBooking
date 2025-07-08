@@ -17,6 +17,7 @@ public class UserPojo {
     private Long id;
     private String name;
     private String email;
+    @Column(unique = true)
     private String userId;
     private String password;
     private String phone;

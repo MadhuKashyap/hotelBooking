@@ -11,6 +11,6 @@ import java.util.Date;
 public class BookingForm {
     private Long roomId;
     private Long hotelId;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
 }
