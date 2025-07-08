@@ -157,7 +157,7 @@ public class DtoHelper {
                                                  BookingHistoryPojo historyPojo,
                                                  BookingForm bookingForm,
                                                  UserPojo userPojo) throws ParseException {
-        historyPojo.setUserId(userPojo.getId());
+        historyPojo.setUserId(userPojo.getUserId());
         historyPojo.setRoomId(roomPojo.getId());
         historyPojo.setStartDate(historyPojo.getStartDate());
         historyPojo.setPriceTotal(roomPojo.getPrice());
@@ -177,12 +177,9 @@ public class DtoHelper {
         bookingHistory.setPriceTotal(bookingHistoryPojo.getPriceTotal());
         
         // Fetch and set user information
-        Optional<UserPojo> userOptional = userDao.findById(bookingHistoryPojo.getUserId());
-        if (userOptional.isPresent()) {
-            UserPojo user = userOptional.get();
-            bookingHistory.setUsername(user.getId()); // Using ID as username since field is Long
-            bookingHistory.setUserEmail(user.getId()); // Using ID as email since field is Long
-        }
+        UserPojo user = userDao.findByUserId(bookingHistoryPojo.getUserId());
+        bookingHistory.setUsername(user.getId()); // Using ID as username since field is Long
+        bookingHistory.setUserEmail(user.getId()); // Using ID as email since field is Long
         
         // Fetch and set room and hotel information
         Optional<RoomPojo> roomOptional = roomDao.findById(bookingHistoryPojo.getRoomId());

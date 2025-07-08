@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface BookingHistoryDao extends JpaRepository<BookingHistoryPojo, Long> {
-    List<BookingHistoryPojo> findByUserId(Long userId);
+    List<BookingHistoryPojo> findByUserId(String userId);
 }
