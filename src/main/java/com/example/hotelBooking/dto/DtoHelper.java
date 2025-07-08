@@ -25,10 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -198,5 +195,26 @@ public class DtoHelper {
         }
         
         return bookingHistory;
+    }
+
+    public void cancelRoomAndRemoveDates(RoomPojo roomPojo, String startDateStr, String endDateStr) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        LocalDate startDate = LocalDate.parse(startDateStr);
+        LocalDate endDate = LocalDate.parse(endDateStr);
+
+        // Parse booked dates from JSON string
+        List<String> bookedDates = mapper.readValue(roomPojo.getBookedDates(), new TypeReference<List<String>>() {});
+        Iterator<String> iterator = bookedDates.iterator();
+
+        while (iterator.hasNext()) {
+            LocalDate booked = LocalDate.parse(iterator.next());
+            if ((booked.isEqual(startDate) || booked.isAfter(startDate)) &&
+                    (booked.isEqual(endDate) || booked.isBefore(endDate))) {
+                iterator.remove();
+            }
+        }
+
+        // Convert back to JSON and set on roomPojo
+        roomPojo.setBookedDates(mapper.writeValueAsString(bookedDates));
     }
 }

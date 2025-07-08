@@ -134,8 +134,16 @@ public class HotelDto {
         Optional<BookingHistoryPojo> pojo = historyDao.findById(bookingId);
         //do not only change booking status but also remove dates from room pojo
         if(pojo.isPresent()) {
-            pojo.get().setStatus(BookingStatus.CANCELLED);
-            return "Booking : " + bookingId + " cancelled successfully";
+            Optional<RoomPojo> roomPojo = roomDao.findById(pojo.get().getRoomId());
+            if(roomPojo.isPresent()) {
+                pojo.get().setStatus(BookingStatus.CANCELLED);
+                dtoHelper.cancelRoomAndRemoveDates(roomPojo.get(),
+                        formatter.format(pojo.get().getStartDate()),
+                        formatter.format(pojo.get().getEndDate()));
+                return "Booking : " + bookingId + " cancelled successfully";
+            } else {
+                throw new Exception("Could not cancel booking, roomId not mapped to this booking");
+            }
         } else
             throw new Exception("No such booking found");
     }
