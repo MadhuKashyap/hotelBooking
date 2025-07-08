@@ -15,6 +15,6 @@ public class RoomData {
     private RoomType roomType;
     private int roomNumber;
     private double price;
-    private String bookedDates;
-    private String amenities;
+    private List<String> bookedDates;
+    private List<String> amenities;
 }

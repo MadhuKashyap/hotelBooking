@@ -43,6 +43,7 @@ public class DtoHelper {
 
     private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     ObjectMapper mapper = new ObjectMapper();
+
     public boolean validateUserForm(UserForm userForm) {
         if (userForm == null) return false;
         if (userForm.getName() == null || userForm.getName().trim().isEmpty()) return false;
@@ -140,14 +141,14 @@ public class DtoHelper {
         data.setAddressId(pojo.getAddressId());
         return data;
     }
-    public RoomData convertRoomPojoToData(RoomPojo pojo) {
+    public RoomData convertRoomPojoToData(RoomPojo pojo) throws JsonProcessingException {
         RoomData data = new RoomData();
         data.setId(pojo.getId());
-        data.setAmenities(pojo.getAmenities());
+        data.setAmenities(mapper.readValue(pojo.getAmenities(), new TypeReference<List<String>>() {}));
         data.setRoomNumber(pojo.getRoomNumber());
         data.setRoomType(pojo.getRoomType());
         data.setPrice(pojo.getPrice());
-        // Add more mappings if HotelData has more fields
+        data.setBookedDates(mapper.readValue(pojo.getBookedDates(), new TypeReference<List<String>>() {}));
         return data;
     }
 

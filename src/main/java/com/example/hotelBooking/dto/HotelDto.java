@@ -65,7 +65,7 @@ public class HotelDto {
         return hotelDataList;
     }
 
-    public List<RoomData> fetchRoomsByHotelId(Long hotelId) {
+    public List<RoomData> fetchRoomsByHotelId(Long hotelId) throws JsonProcessingException {
         List<RoomData> roomDataList = new ArrayList<>();
         List<RoomPojo> roomPojoList =  roomDao.findByHotelId(hotelId);
         for(RoomPojo roomPojo : roomPojoList) {

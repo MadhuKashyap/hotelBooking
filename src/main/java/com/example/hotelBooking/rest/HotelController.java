@@ -25,7 +25,7 @@ public class HotelController {
         return hotelDto.fetchHotels(filterForm);
     }
     @GetMapping("/fetch-rooms")
-    public List<RoomData> fetchAvailableHotelRooms(@RequestParam Long hotelId) {
+    public List<RoomData> fetchAvailableHotelRooms(@RequestParam Long hotelId) throws JsonProcessingException {
         return hotelDto.fetchRoomsByHotelId(hotelId);
     }
     @PostMapping("/book-room")
