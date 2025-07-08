@@ -132,6 +132,7 @@ public class HotelDto {
     Exception.class)
     public String cancelRoom(Long bookingId) throws Exception {
         Optional<BookingHistoryPojo> pojo = historyDao.findById(bookingId);
+        //do not only change booking status but also remove dates from room pojo
         if(pojo.isPresent()) {
             pojo.get().setStatus(BookingStatus.CANCELLED);
             return "Booking : " + bookingId + " cancelled successfully";
