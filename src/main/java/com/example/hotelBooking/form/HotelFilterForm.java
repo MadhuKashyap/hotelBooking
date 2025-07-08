@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class HotelFilterForm {
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private Integer ratings;
     private Double priceStart;
     private Double priceEnd;

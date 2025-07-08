@@ -15,9 +15,15 @@ import com.example.hotelBooking.pojo.HotelPojo;
 import com.example.hotelBooking.form.HotelFilterForm;
 import com.example.hotelBooking.pojo.RoomPojo;
 import com.example.hotelBooking.pojo.UserPojo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +41,8 @@ public class DtoHelper {
     @Autowired
     private HotelDao hotelDao;
 
+    private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    ObjectMapper mapper = new ObjectMapper();
     public boolean validateUserForm(UserForm userForm) {
         if (userForm == null) return false;
         if (userForm.getName() == null || userForm.getName().trim().isEmpty()) return false;
@@ -46,9 +54,9 @@ public class DtoHelper {
         // Optionally check addressId or address if required
         return true;
     }
-    public List<HotelPojo> filteHotelByDateRange(List<HotelPojo> hotels, HotelFilterForm filterForm) {
-        Date startDate = filterForm.getStartDate();
-        Date endDate = filterForm.getEndDate();
+    public List<HotelPojo> filterHotelByDateRange(List<HotelPojo> hotels, HotelFilterForm filterForm) throws JsonProcessingException {
+        String startDate = filterForm.getStartDate();
+        String endDate = filterForm.getEndDate();
         if (startDate == null || endDate == null) {
             return hotels;
         }
@@ -58,11 +66,13 @@ public class DtoHelper {
             List<RoomPojo> rooms = roomDao.findByHotelId(hotel.getId()); // Assumes HotelPojo has getRooms()
             if (rooms != null) {
                 for (RoomPojo room : rooms) {
-                    List<Date> bookedDates = room.getBookedDates(); // Assumes RoomPojo has getBookedDates()
+                    String bookedDatesString = room.getBookedDates();
+                    List<String> bookedDates =  mapper.readValue(bookedDatesString, new TypeReference<List<String>>() {});
                     boolean isAvailable = true;
                     if (bookedDates != null) {
-                        for (Date booked : bookedDates) {
-                            if (!booked.before(startDate) && !booked.after(endDate)) {
+                        for (String booked : bookedDates) {
+                            if (!LocalDate.parse(booked).isBefore(LocalDate.parse(startDate)) &&
+                                    !LocalDate.parse(booked).isAfter(LocalDate.parse(endDate))) {
                                 isAvailable = false;
                                 break;
                             }
@@ -82,8 +92,25 @@ public class DtoHelper {
     }
 
     public List<HotelPojo> filterHotelByPrice(List<HotelPojo> hotels, HotelFilterForm filterForm) {
-        //TODO : Implement this
-        return new ArrayList<>();
+        Double priceStart = filterForm.getPriceStart();
+        Double priceEnd = filterForm.getPriceEnd();
+        List<HotelPojo> filtered = new ArrayList<>();
+        for (HotelPojo hotel : hotels) {
+            List<RoomPojo> rooms = roomDao.findByHotelId(hotel.getId());
+            boolean hasRoomInRange = false;
+            for (RoomPojo room : rooms) {
+                double price = room.getPrice();
+                if ((priceStart == null || price >= priceStart) &&
+                    (priceEnd == null || price <= priceEnd)) {
+                    hasRoomInRange = true;
+                    break;
+                }
+            }
+            if (hasRoomInRange) {
+                filtered.add(hotel);
+            }
+        }
+        return filtered;
     }
 
     public static List<HotelPojo> filterHotelByRating(List<HotelPojo> hotels, HotelFilterForm filterForm) {

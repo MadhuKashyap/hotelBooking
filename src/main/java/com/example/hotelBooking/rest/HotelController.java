@@ -8,6 +8,7 @@ import com.example.hotelBooking.model.data.HotelData;
 import com.example.hotelBooking.model.data.RoomData;
 import com.example.hotelBooking.model.form.BookingForm;
 import com.example.hotelBooking.pojo.HotelPojo;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -20,7 +21,7 @@ public class HotelController {
     private HotelDto hotelDto;
 
     @PostMapping("/fetch-all")
-    public List<HotelData> fetchHotels(@RequestBody HotelFilterForm filterForm) {
+    public List<HotelData> fetchHotels(@RequestBody HotelFilterForm filterForm) throws JsonProcessingException {
         return hotelDto.fetchHotels(filterForm);
     }
     @GetMapping("/fetch-rooms")

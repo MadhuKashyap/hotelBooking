@@ -20,9 +20,9 @@ public class RoomPojo extends AbstractVersionedPojo{
     private int roomNumber;
     private double price;
     @Column(columnDefinition = "TEXT")
-    private List<Date> bookedDates;
+    private String bookedDates;
 
     @Column(columnDefinition = "TEXT")
-    private List<String> amenities;    // Add fields and methods as needed
+    private String amenities;    // Add fields and methods as needed
     private Long hotelId;
 } 

@@ -16,6 +16,9 @@ import com.example.hotelBooking.pojo.BookingHistoryPojo;
 import com.example.hotelBooking.pojo.HotelPojo;
 import com.example.hotelBooking.pojo.RoomPojo;
 import com.example.hotelBooking.pojo.UserPojo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +47,9 @@ public class HotelDto {
     @Autowired
     private UserDao userDao;
 
-    public List<HotelData> fetchHotels(HotelFilterForm filterForm) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    public List<HotelData> fetchHotels(HotelFilterForm filterForm) throws JsonProcessingException {
         List<HotelPojo> hotels = hotelDao.findAll();
         List<HotelPojo> hotelByDateRange = new ArrayList<>();
         List<HotelPojo> hotelByPrice = new ArrayList<>();
@@ -57,7 +62,7 @@ public class HotelDto {
                 hotelDataList.add(dtoHelper.convertHotelPojoToData(hotelPojo));
             }
         if(!ObjectUtils.isEmpty(filterForm.getStartDate()) && !ObjectUtils.isEmpty(filterForm.getEndDate())) {
-            hotelByDateRange = dtoHelper.filteHotelByDateRange(hotels, filterForm);
+            hotelByDateRange = dtoHelper.filterHotelByDateRange(hotels, filterForm);
         } if(!CollectionUtils.isEmpty(hotelByDateRange)) {
             hotelByPrice = dtoHelper.filterHotelByPrice(hotelByDateRange, filterForm);
         } if(!CollectionUtils.isEmpty(hotelByPrice)) {
@@ -71,9 +76,7 @@ public class HotelDto {
 
     public List<RoomData> fetchRoomsByHotelId(Long hotelId) {
         List<RoomData> roomDataList = new ArrayList<>();
-        List<RoomPojo> roomPojoList =  roomDao.findByHotelId(hotelId)
-                .stream().filter( x -> x.getBookedDates().size() != 365)
-                .toList();
+        List<RoomPojo> roomPojoList =  roomDao.findByHotelId(hotelId);
         for(RoomPojo roomPojo : roomPojoList) {
             roomDataList.add(dtoHelper.convertRoomPojoToData(roomPojo));
         }
@@ -87,9 +90,12 @@ public class HotelDto {
             try {
                 RoomPojo roomPojo = roomDao.findById(bookingForm.getRoomId()).orElseThrow();
                 Date date = new Date();
-                if(roomPojo.getBookedDates().contains(date))
+                String bookedDatesString = roomPojo.getBookedDates();
+                List<String> bookedDates = mapper.readValue(bookedDatesString, new TypeReference<List<String>>() {});
+                if(bookedDates.contains(date))
                     throw new Exception("Room already booked");
-                roomPojo.getBookedDates().add(date);
+                bookedDates.add(String.valueOf(date));
+                roomPojo.setBookedDates(mapper.writeValueAsString(bookedDates));
                 roomDao.save(roomPojo);
                 BookingHistoryPojo historyPojo = new BookingHistoryPojo();
                 historyPojo = dtoHelper.saveBookingHistory(roomPojo, historyPojo, bookingForm, userPojo);
