@@ -20,3 +20,7 @@ room.setAmenities(amenitiesJson);
 
 // Convert JSON String back to List<String>
 List<String> amenitiesList = mapper.readValue(room.getAmenities(), new TypeReference<List<String>>() {});
+
+
+[//]: # (mvn spring-boot:build-image, docker push rootuser424/order-service:0.0.1)
+
