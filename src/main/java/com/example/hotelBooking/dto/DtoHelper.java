@@ -217,4 +217,8 @@ public class DtoHelper {
         // Convert back to JSON and set on roomPojo
         roomPojo.setBookedDates(mapper.writeValueAsString(bookedDates));
     }
+
+    public boolean callDummyPaymentService() {
+        return true;
+    }
 }

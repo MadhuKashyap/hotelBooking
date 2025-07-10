@@ -120,6 +120,11 @@ public class HotelDto {
                 BookingHistoryPojo historyPojo = new BookingHistoryPojo();
                 historyPojo = dtoHelper.saveBookingHistory(roomPojo, historyPojo, bookingForm, userPojo);
                 historyDao.save(historyPojo);
+                boolean paymentSuccess = dtoHelper.callDummyPaymentService();
+                if (paymentSuccess) {
+                    historyPojo.setStatus(BookingStatus.BOOKED);
+                    historyDao.save(historyPojo); // Update status to CONFIRMED
+                }
                 return "Room is booked successfully";
             } catch (OptimisticLockException e) {
                 if(retries == 2) return "Room is concurrently being booked by another user";
