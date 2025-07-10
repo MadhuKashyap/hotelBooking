@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Hotel Booking API
 
 A Spring Boot RESTful API for hotel room booking, user management, and booking history. Easily deployable with Docker.
