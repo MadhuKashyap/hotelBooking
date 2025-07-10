@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Hotel Booking API
 
 A Spring Boot RESTful API for hotel room booking, user management, and booking history. Easily deployable with Docker.
@@ -74,7 +75,7 @@ docker run -p 8080:8080 hotel-booking-app
 ## 🤝 Contributing
 Pull requests are welcome! For major changes, please open an issue first.
 
----
 
 ## 📬 Contact
-For questions, contact the maintainer at [your-email@example.com]. 
+For questions, contact the maintainer at [cv.madhu01@gmail.com]. 
+
