@@ -10,6 +10,8 @@ A Spring Boot RESTful API for hotel room booking, user management, and booking h
 - Book and cancel rooms
 - View booking history
 - Health check endpoint
+- API Authentication
+- Supports Multi server Thread safety
 - Dockerized for easy deployment
 
 ---
