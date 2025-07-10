@@ -28,8 +28,10 @@ public class HotelController {
         return hotelDto.fetchHotels(filterForm, page, size);
     }
     @GetMapping("/fetch-rooms")
-    public List<RoomData> fetchAvailableHotelRooms(@RequestParam Long hotelId) throws JsonProcessingException {
-        return hotelDto.fetchRoomsByHotelId(hotelId);
+    public Page<RoomData> fetchAvailableHotelRooms(@RequestParam Long hotelId,
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
+        return hotelDto.fetchRoomsByHotelId(hotelId, page, size);
     }
     @PostMapping("/book-room")
     public String bookRoom(@RequestBody BookingForm bookingForm) throws Exception {

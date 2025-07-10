@@ -75,13 +75,19 @@ public class HotelDto {
         return new PageImpl<>(hotelDataList, pageable, hotels.size());
     }
 
-    public List<RoomData> fetchRoomsByHotelId(Long hotelId) throws JsonProcessingException {
+    public Page<RoomData> fetchRoomsByHotelId(Long hotelId, int page, int size) throws JsonProcessingException {
         List<RoomData> roomDataList = new ArrayList<>();
-        List<RoomPojo> roomPojoList =  roomDao.findByHotelId(hotelId);
+        List<RoomPojo> roomPojoList = roomDao.findByHotelId(hotelId);
         for(RoomPojo roomPojo : roomPojoList) {
             roomDataList.add(dtoHelper.convertRoomPojoToData(roomPojo));
         }
-        return roomDataList;
+        int start = Math.min(page * size, roomDataList.size());
+        int end = Math.min(start + size, roomDataList.size());
+        // Initially only returns first 10 results, next set of results are returned when client tries to fetch it
+
+        List<RoomData> pagedList = roomDataList.subList(start, end);
+        Pageable pageable = PageRequest.of(page, size);
+        return new PageImpl<>(pagedList, pageable, roomDataList.size());
     }
 
     @Transactional(rollbackOn = Exception.class)
