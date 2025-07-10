@@ -22,13 +22,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import  org.springframework.data.domain.Pageable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -53,9 +56,8 @@ public class HotelDto {
     ObjectMapper mapper = new ObjectMapper();
     Calendar cal = Calendar.getInstance();
 
-    public List<HotelData> fetchHotels(HotelFilterForm filterForm) throws JsonProcessingException {
+    public Page<HotelData> fetchHotels(HotelFilterForm filterForm, int page, int size) throws JsonProcessingException {
         List<HotelPojo> hotels = hotelDao.findAll();
-        List<HotelData> hotelDataList = new ArrayList<>();
         if(!ObjectUtils.isEmpty(filterForm.getStartDate()) && !ObjectUtils.isEmpty(filterForm.getEndDate())) {
             hotels = dtoHelper.filterHotelByDateRange(hotels, filterForm);
         } if(!ObjectUtils.isEmpty(filterForm.getPriceStart()) && !ObjectUtils.isEmpty(filterForm.getPriceEnd())) {
@@ -63,10 +65,14 @@ public class HotelDto {
         } if(!ObjectUtils.isEmpty(filterForm.getRatings())) {
             hotels = DtoHelper.filterHotelByRating(hotels, filterForm);
         }
-        for(HotelPojo hotelPojo : hotels) {
+        int start = Math.min(page * size, hotels.size());
+        int end = Math.min(start + size, hotels.size());
+        List<HotelData> hotelDataList = new ArrayList<>();
+        for(HotelPojo hotelPojo : hotels.subList(start, end)) {
             hotelDataList.add(dtoHelper.convertHotelPojoToData(hotelPojo));
         }
-        return hotelDataList;
+        Pageable pageable = PageRequest.of(page, size);
+        return new PageImpl<>(hotelDataList, pageable, hotels.size());
     }
 
     public List<RoomData> fetchRoomsByHotelId(Long hotelId) throws JsonProcessingException {
