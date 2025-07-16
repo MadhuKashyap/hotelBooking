@@ -16,6 +16,7 @@ import com.example.hotelBooking.pojo.BookingHistoryPojo;
 import com.example.hotelBooking.pojo.HotelPojo;
 import com.example.hotelBooking.pojo.RoomPojo;
 import com.example.hotelBooking.pojo.UserPojo;
+import com.example.hotelBooking.service.KafkaProducerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,6 +52,9 @@ public class HotelDto {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
 
     public static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     ObjectMapper mapper = new ObjectMapper();
@@ -137,6 +141,8 @@ public class HotelDto {
                     historyPojo.setStatus(BookingStatus.BOOKED);
                     historyDao.save(historyPojo); // Update status to CONFIRMED
                 }
+                BookingHistory history = dtoHelper.convertBookingHistoryPojoToData(historyPojo);
+                kafkaProducerService.sendBookingEvent("order-notification", mapper.writeValueAsString(history));
                 return "Room is booked successfully";
             } catch (OptimisticLockException e) {
                 if(retries == 2) return "Room is concurrently being booked by another user";
@@ -144,19 +150,25 @@ public class HotelDto {
         }
         return "Room not found";
     }
-
+/*When a booking is confirmed or cancelled, publish a notification event.
+A notification service can consume these events and send emails/SMS to users.
+ */
     @Transactional(rollbackOn =
     Exception.class)
     public String cancelRoom(Long bookingId) throws Exception {
         Optional<BookingHistoryPojo> pojo = historyDao.findById(bookingId);
         //do not only change booking status but also remove dates from room pojo
         if(pojo.isPresent()) {
+            BookingHistory history = dtoHelper.convertBookingHistoryPojoToData(pojo.get());
             Optional<RoomPojo> roomPojo = roomDao.findById(pojo.get().getRoomId());
             if(roomPojo.isPresent()) {
                 pojo.get().setStatus(BookingStatus.CANCELLED);
                 dtoHelper.cancelRoomAndRemoveDates(roomPojo.get(),
                         formatter.format(pojo.get().getStartDate()),
                         formatter.format(pojo.get().getEndDate()));
+                //send cancelled notification to kafka topic
+                history.setStatus(BookingStatus.CANCELLED);
+                kafkaProducerService.sendBookingEvent("order-notification", mapper.writeValueAsString(history));
                 return "Booking : " + bookingId + " cancelled successfully";
             } else {
                 throw new Exception("Could not cancel booking, roomId not mapped to this booking");

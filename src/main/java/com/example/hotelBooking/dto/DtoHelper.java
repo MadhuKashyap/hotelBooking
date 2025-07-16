@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -172,7 +171,7 @@ public class DtoHelper {
         bookingHistory.setStartDate(bookingHistoryPojo.getStartDate());
         bookingHistory.setEndDate(bookingHistoryPojo.getEndDate());
         bookingHistory.setPriceTotal(bookingHistoryPojo.getPriceTotal());
-        
+        bookingHistory.setStatus(bookingHistoryPojo.getStatus());
         // Fetch and set user information
         UserPojo user = userDao.findByUserId(bookingHistoryPojo.getUserId());
         bookingHistory.setUsername(user.getId()); // Using ID as username since field is Long

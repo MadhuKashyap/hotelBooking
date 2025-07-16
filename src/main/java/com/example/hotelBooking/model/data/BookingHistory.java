@@ -1,5 +1,6 @@
 package com.example.hotelBooking.model.data;
 
+import com.example.hotelBooking.model.enums.BookingStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,4 +19,5 @@ public class BookingHistory {
     private String roomName;
     private String roomType;
     private String roomDescription;
+    private BookingStatus status;
 }
