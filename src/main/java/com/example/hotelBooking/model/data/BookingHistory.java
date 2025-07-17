@@ -10,8 +10,8 @@ import java.util.Date;
 @Setter
 public class BookingHistory {
     private Long bookingId;
-    private Long username;
-    private Long userEmail;
+    private String username;
+    private String userEmail;
     private Date startDate;
     private Date endDate;
     private Double priceTotal;

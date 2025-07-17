@@ -174,8 +174,8 @@ public class DtoHelper {
         bookingHistory.setStatus(bookingHistoryPojo.getStatus());
         // Fetch and set user information
         UserPojo user = userDao.findByUserId(bookingHistoryPojo.getUserId());
-        bookingHistory.setUsername(user.getId()); // Using ID as username since field is Long
-        bookingHistory.setUserEmail(user.getId()); // Using ID as email since field is Long
+        bookingHistory.setUsername(user.getUserId()); // Using ID as username since field is Long
+        bookingHistory.setUserEmail(user.getEmail()); // Using ID as email since field is Long
         
         // Fetch and set room and hotel information
         Optional<RoomPojo> roomOptional = roomDao.findById(bookingHistoryPojo.getRoomId());
