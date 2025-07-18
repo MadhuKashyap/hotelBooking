@@ -19,11 +19,10 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for REST API
             .authorizeHttpRequests(authz -> authz
                 // Public endpoints that don't require authentication
-                .requestMatchers("/users/signup", "/health").permitAll()
+                .requestMatchers("/users/signup", "/health", "/index", "/hotel-app/index").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
-            )
-            .httpBasic(httpBasic -> {}); // Enable HTTP Basic Auth
+            );
         
         return http.build();
     }
