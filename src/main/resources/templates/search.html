@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Find the Best Deals - Hotel Booking</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffe082 100%);
+            min-height: 100vh;
+        }
+        .search-box {
+            background: #ffc107;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 540px;
+            margin: 60px auto;
+        }
+        .search-box h3 {
+            color: #1a237e;
+            font-weight: 700;
+        }
+        .search-box label {
+            font-weight: 500;
+        }
+        .search-box .form-control, .search-box .form-select {
+            border-radius: 8px;
+        }
+        .search-box .btn-search {
+            background: #2196f3;
+            color: #fff;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            padding: 0.5rem 2.5rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(33,150,243,0.15);
+            transition: background 0.2s;
+        }
+        .search-box .btn-search:hover {
+            background: #1565c0;
+        }
+        .quick-links a {
+            color: #1565c0;
+            margin-right: 10px;
+            font-size: 0.95rem;
+        }
+        .quick-links a:hover {
+            text-decoration: underline;
+        }
+        .form-check-label {
+            margin-right: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-box">
+        <h3><span style="font-size:1.3em;">🔍</span> Find the Best Deals</h3>
+        <div class="mb-2" style="color:#333; font-size:1rem;">Over 800 thousand properties and 20 million rooms at your fingertips</div>
+        <form action="/hotel-app/results" method="get">
+            <div class="mb-3">
+                <label for="hotelname" class="form-label">Hotel Name:</label>
+                <input type="text" class="form-control" id="hotelname" name="hotelname" placeholder="Enter hotel name (optional if using filters)">
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="startDate" class="form-label">Check-in Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="startDate" name="startDate" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="endDate" class="form-label">Check-out Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="endDate" name="endDate" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="ratings" class="form-label">Ratings</label>
+                    <select class="form-select" id="ratings" name="ratings">
+                        <option value="">Any</option>
+                        <option value="5">5 Star</option>
+                        <option value="4">4 Star</option>
+                        <option value="3">3 Star</option>
+                        <option value="2">2 Star</option>
+                        <option value="1">1 Star</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="priceStart" class="form-label">Min Price</label>
+                    <input type="number" class="form-control" id="priceStart" name="priceStart" min="0" step="0.01" placeholder="e.g. 50">
+                </div>
+                <div class="col-md-4">
+                    <label for="priceEnd" class="form-label">Max Price</label>
+                    <input type="number" class="form-control" id="priceEnd" name="priceEnd" min="0" step="0.01" placeholder="e.g. 500">
+                </div>
+            </div>
+            <div class="alert alert-info py-2 mb-3" style="font-size:0.97rem;">
+                <strong>Note:</strong> You can either enter a hotel name <u>or</u> use the filters below. Only <b>Check-in</b> and <b>Check-out</b> dates are mandatory.
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-search">Search</button>
+            </div>
+        </form>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

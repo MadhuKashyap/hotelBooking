@@ -14,4 +14,8 @@ public class IndexController {
     public ModelAndView getHome() {
         return new ModelAndView("home");
     }
+    @GetMapping("/search")
+    public ModelAndView searchBox() {
+        return new ModelAndView("search");
+    }
 }
