@@ -19,9 +19,19 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for REST API
             .authorizeHttpRequests(authz -> authz
                 // Public endpoints that don't require authentication
-                .requestMatchers("/users/signup", "/health", "/index", "/hotel-app/index").permitAll()
-                // All other endpoints require authentication
+                            .requestMatchers("/users/signup", "/health", "/index", "/hotel-app/index", "/login", "/hotel-app/login", "/css/**", "/js/**").permitAll()
+                    // All other endpoints require authentication
                 .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/home", true)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
             );
         
         return http.build();

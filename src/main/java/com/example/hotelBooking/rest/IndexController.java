@@ -6,9 +6,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class IndexController {
-
-    @GetMapping("/index")
-    public ModelAndView showIndexPage() {
-        return new ModelAndView("index");
+    @GetMapping("/login")
+    public ModelAndView getLogin() {
+        return new ModelAndView("login");
     }
-} 
+    @GetMapping("/home")
+    public ModelAndView getHome() {
+        return new ModelAndView("home");
+    }
+}

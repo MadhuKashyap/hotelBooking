@@ -4,10 +4,12 @@ import com.example.hotelBooking.dto.UserDto;
 import com.example.hotelBooking.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Controller
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -34,7 +36,7 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/success")
     public Map<String, Object> login(@RequestBody UserForm userForm) {
         Map<String, Object> response = new HashMap<>();
         String result = userDto.login(userForm);
@@ -43,8 +45,9 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("/users/login")
-    public Map<String, Object> loginWithPath(@RequestBody UserForm userForm) {
-        return login(userForm);
-    }
+//    @PostMapping("/users/login")
+//    public Map<String, Object> loginWithPath(@RequestBody UserForm userForm) {
+//        return login(userForm);
+//    }
+
 } 
