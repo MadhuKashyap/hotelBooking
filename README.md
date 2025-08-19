@@ -13,6 +13,7 @@ A Spring Boot RESTful API for hotel room booking, user management, and booking h
 - API Authentication
 - Supports Multi server Thread safety
 - Dockerized for easy deployment
+- Sending booking confirmation and cancellation to user using kafka
 
 ---
 
