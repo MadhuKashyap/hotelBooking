@@ -22,10 +22,12 @@ public class HotelController {
     private HotelDto hotelDto;
 
     @PostMapping("/fetch-all")
-    public Page<HotelData> fetchHotels(@RequestBody HotelFilterForm filterForm,
+    public Page<HotelData> fetchHotels(@ModelAttribute HotelFilterForm filterForm,
                                        @RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
-        return hotelDto.fetchHotels(filterForm, page, size);
+                                       @RequestParam(defaultValue = "10") int size,
+                                       @RequestParam(defaultValue = "id") String sortBy,
+                                       @RequestParam(defaultValue = "ASC") String sortDir) throws JsonProcessingException {
+        return hotelDto.fetchHotels(filterForm, page, size, sortBy, sortDir);
     }
     @GetMapping("/fetch-rooms")
     public Page<RoomData> fetchAvailableHotelRooms(@RequestParam Long hotelId,

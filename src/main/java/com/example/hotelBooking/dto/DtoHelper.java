@@ -220,4 +220,23 @@ public class DtoHelper {
     public boolean callDummyPaymentService() {
         return true;
     }
+
+    public List<HotelPojo> sortHotelByParameter(List<HotelPojo> hotels, String sortBy, String sortDir) {
+        return hotels.stream().sorted((a, b) -> {
+            int cmp = 0;
+            switch (sortBy) {
+                case "name" :
+                    cmp =  a.getName().compareToIgnoreCase(b.getName());
+                    break;
+                case "rating" :
+                    cmp = Double.compare(a.getRating(), b.getRating());
+                    break;
+                default: cmp = Double.compare(a.getId(), b.getId());
+
+
+            }
+            cmp = sortDir == "DESC" ? -cmp : cmp;
+            return cmp;
+        }).collect(Collectors.toList());
+    }
 }

@@ -60,7 +60,7 @@ public class HotelDto {
     ObjectMapper mapper = new ObjectMapper();
     Calendar cal = Calendar.getInstance();
 
-    public Page<HotelData> fetchHotels(HotelFilterForm filterForm, int page, int size) throws JsonProcessingException {
+    public Page<HotelData> fetchHotels(HotelFilterForm filterForm, int page, int size, String sortBy, String sortDir) throws JsonProcessingException {
         List<HotelPojo> hotels = hotelDao.findAll();
         if(!ObjectUtils.isEmpty(filterForm.getStartDate()) && !ObjectUtils.isEmpty(filterForm.getEndDate())) {
             hotels = dtoHelper.filterHotelByDateRange(hotels, filterForm);
@@ -71,6 +71,7 @@ public class HotelDto {
         }
         int start = Math.min(page * size, hotels.size());
         int end = Math.min(start + size, hotels.size());
+        dtoHelper.sortHotelByParameter(hotels, sortBy, sortDir);
         List<HotelData> hotelDataList = new ArrayList<>();
         for(HotelPojo hotelPojo : hotels.subList(start, end)) {
             hotelDataList.add(dtoHelper.convertHotelPojoToData(hotelPojo));

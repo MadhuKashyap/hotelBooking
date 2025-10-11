@@ -18,4 +18,6 @@ public class IndexController {
     public ModelAndView searchBox() {
         return new ModelAndView("search");
     }
+    @GetMapping("/hotel")
+    public ModelAndView hotelList() { return new ModelAndView("hotel");}
 }
